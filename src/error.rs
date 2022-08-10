@@ -1,4 +1,3 @@
-use serde::export::fmt::Display;
 use std::error::Error;
 use std::fmt::Formatter;
 
@@ -19,7 +18,7 @@ impl HttpError {
 
 impl Error for HttpError {}
 
-impl Display for HttpError {
+impl std::fmt::Display for HttpError {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         write!(
             f,

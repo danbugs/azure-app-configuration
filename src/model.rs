@@ -1,6 +1,9 @@
+#![allow(dead_code)]
+
 use std::collections::HashMap;
 
 #[derive(Deserialize, Debug, Clone)]
+
 pub struct Key {
     name: String,
 }

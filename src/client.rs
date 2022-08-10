@@ -55,7 +55,7 @@ impl AzureAppConfigClient {
     /// ```
     pub async fn list_labels(&self) -> Result<Labels, Exception> {
         let url = &format!("{}", self.endpoints.get_uri(EndpointUrl::Labels)).parse::<Url>()?;
-        Ok(self.send_json(url, Method::GET, Body::empty()).await?)
+        self.send_json(url, Method::GET, Body::empty()).await
     }
 
     /// List all available keys in Azure App Configuration service
@@ -68,7 +68,7 @@ impl AzureAppConfigClient {
     /// ```
     pub async fn list_keys(&self) -> Result<Keys, Exception> {
         let url = &format!("{}", self.endpoints.get_uri(EndpointUrl::Keys)).parse::<Url>()?;
-        Ok(self.send_json(url, Method::GET, Body::empty()).await?)
+        self.send_json(url, Method::GET, Body::empty()).await
     }
 
     /// List all available key values in Azure App Configuration service
@@ -87,7 +87,7 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        Ok(self.send_json(url, Method::GET, Body::empty()).await?)
+        self.send_json(url, Method::GET, Body::empty()).await
     }
 
     /// Set the target key with the desired value, label, tags and content-type
@@ -126,13 +126,10 @@ impl AzureAppConfigClient {
         tags: Option<HashMap<S, S>>,
         content_type: Option<S>,
     ) -> Result<KeyValue, Exception> {
-        let mut k = KeyValue::default();
-
-        k.value = value.into();
-
-        k.content_type = match content_type {
-            Some(c) => Some(c.into()),
-            None => None,
+        let mut k = KeyValue {
+            value: value.into(),
+            content_type: content_type.map(|c| c.into()),
+            ..Default::default()
         };
 
         if let Some(tg) = tags {
@@ -151,9 +148,8 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        Ok(self
-            .send_json(url, Method::PUT, Body::from(json.into_bytes()))
-            .await?)
+        self.send_json(url, Method::PUT, Body::from(json.into_bytes()))
+            .await
     }
 
     /// Get key value
@@ -181,9 +177,8 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        Ok(self
-            .send_json::<KeyValue>(url, Method::GET, Body::empty())
-            .await?)
+        self.send_json::<KeyValue>(url, Method::GET, Body::empty())
+            .await
     }
 
     /// Remove target key value from Azure App Configuration service
