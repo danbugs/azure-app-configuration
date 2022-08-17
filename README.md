@@ -102,9 +102,9 @@ Delete ConnectionString key for Application1 label
 ```rust
     let kv = app_config_client
             .set_key(
-                "ConnectionString",
-                "Server=dummy;user id=user;password=fakepass",
-                SearchLabel::For("Application1"),
+                "some_key",
+                "some_value",
+                SearchLabel::For(""),
                 None,
                 None,
             )

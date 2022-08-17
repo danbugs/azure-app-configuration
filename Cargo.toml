@@ -13,22 +13,18 @@ categories = ["api-bindings", "config"]
 readme = "README.md"
 
 [dependencies]
-surf = "1.0.2"
-sha2 = "0.8.0"
-mime = "0.3.14"
-http = "0.1.18"
-hmac = "0.7.1"
-base64 = "0.10.1"
-url = "2.1.0"
-async-std = "0.99.4"
-httpdate = "0.3.2"
-serde = "1.0.100"
-serde_derive = "1.0.100"
-serde_json = "1.0.40"
-log = "0.4.8"
-
-[dev-dependencies]
-femme = "1.2.0"
+surf = "2.3"
+http = "0.2"
+sha2 = "0.10"
+base64 = "0.13"
+url = "2.1"
+async-std = "1.12"
+httpdate = "1"
+serde = "1"
+serde_derive = "1"
+serde_json = "1"
+log = "0.4"
+ring = "0.16"
 
 [[example]]
 name = "list-key-values"

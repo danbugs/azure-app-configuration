@@ -4,11 +4,10 @@ use crate::model::{KeyValue, KeyValues, Keys, Labels};
 use crate::request_sign::create_signed_request;
 use crate::search_label::SearchLabel;
 use crate::Exception;
-use http::Method;
 use serde::de::DeserializeOwned;
-use std::str::FromStr;
+use surf::Client;
+use surf::http::Method;
 
-use mime::Mime;
 use std::collections::HashMap;
 use url::Url;
 
@@ -55,7 +54,7 @@ impl AzureAppConfigClient {
     /// ```
     pub async fn list_labels(&self) -> Result<Labels, Exception> {
         let url = &format!("{}", self.endpoints.get_uri(EndpointUrl::Labels)).parse::<Url>()?;
-        self.send_json(url, Method::GET, Body::empty()).await
+        self.send_json(url, Method::Get, Body::empty()).await
     }
 
     /// List all available keys in Azure App Configuration service
@@ -68,7 +67,7 @@ impl AzureAppConfigClient {
     /// ```
     pub async fn list_keys(&self) -> Result<Keys, Exception> {
         let url = &format!("{}", self.endpoints.get_uri(EndpointUrl::Keys)).parse::<Url>()?;
-        self.send_json(url, Method::GET, Body::empty()).await
+        self.send_json(url, Method::Get, Body::empty()).await
     }
 
     /// List all available key values in Azure App Configuration service
@@ -87,7 +86,7 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        self.send_json(url, Method::GET, Body::empty()).await
+        self.send_json(url, Method::Get, Body::empty()).await
     }
 
     /// Set the target key with the desired value, label, tags and content-type
@@ -148,7 +147,7 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        self.send_json(url, Method::PUT, Body::from(json.into_bytes()))
+        self.send_json(url, Method::Put, Body::from(json.into_bytes()))
             .await
     }
 
@@ -177,7 +176,7 @@ impl AzureAppConfigClient {
         )
         .parse::<Url>()?;
 
-        self.send_json::<KeyValue>(url, Method::GET, Body::empty())
+        self.send_json::<KeyValue>(url, Method::Get, Body::empty())
             .await
     }
 
@@ -199,7 +198,7 @@ impl AzureAppConfigClient {
     ) -> Result<(), Exception> {
         let url = get_key_value_url(self, key, label)?;
 
-        self.send_request(&url, Method::DELETE, Body::empty())
+        self.send_request(&url, Method::Delete, Body::empty())
             .await?;
 
         Ok(())
@@ -223,18 +222,18 @@ impl AzureAppConfigClient {
             url,
             body,
             method.clone(),
-        )
-        .await?;
+        )?;
 
-        if method != Method::GET {
-            req = req.set_mime(Mime::from_str(APP_CONFIG_MIME).unwrap());
+        if method != Method::Get {
+            req.set_header("Content-Type", APP_CONFIG_MIME);
         }
 
-        let mut result = req.await?;
+        let client = Client::new();
+        let mut result = client.send(req).await?;
         let content = result.body_string().await?;
 
         match result.status() {
-            v if !v.is_success() => Err(HttpError::new(v.as_u16() as usize, url.as_str()).into()),
+            v if !v.is_success() => Err(HttpError::new(v as usize, url.as_str()).into()),
             _ => Ok(content),
         }
     }
