@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::error::Error;
 use std::fmt::Formatter;
 
@@ -5,13 +7,15 @@ use std::fmt::Formatter;
 pub struct HttpError {
     status: usize,
     url: String,
+    content: String,
 }
 
 impl HttpError {
-    pub fn new<S: Into<String>>(err: usize, url: S) -> Self {
+    pub fn new<S: Into<String>>(err: usize, url: S, content: S) -> Self {
         HttpError {
             status: err,
             url: url.into(),
+            content: content.into(),
         }
     }
 }
