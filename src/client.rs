@@ -231,6 +231,7 @@ impl AzureAppConfigClient {
         let client = Client::new();
         let mut result = client.send(req).await?;
         let content = result.body_string().await?;
+        log::debug!("{}", &content);
 
         match result.status() {
             v if !v.is_success() => Err(HttpError::new(v as usize, url.as_str()).into()),
